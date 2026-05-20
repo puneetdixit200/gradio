@@ -1,5 +1,15 @@
 # website
 
+## 0.77.0
+
+### Features
+
+- [#13368](https://github.com/gradio-app/gradio/pull/13368) [`da45b72`](https://github.com/gradio-app/gradio/commit/da45b72da424ad77e55a2ca99375dbda9eb1c5b3) - add embedded workflow to docs.  Thanks @hannahblair!
+
+### Dependency updates
+
+- @gradio/html@0.12.4
+
 ## 0.76.0
 
 ### Features
