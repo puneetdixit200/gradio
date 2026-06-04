@@ -718,43 +718,42 @@ export class DependencyManager {
 	 * @param data the data to update the components with
 	 * */
 	async handle_data(outputs: number[], data: unknown[]) {
-		await Promise.all(
-			outputs.map(async (output_id, i) => {
-				const _data = data[i] === undefined ? NOVALUE : data[i];
-				if (_data === NOVALUE) return;
+		for (let i = 0; i < outputs.length; i++) {
+			const output_id = outputs[i];
+			const _data = data[i] === undefined ? NOVALUE : data[i];
+			if (_data === NOVALUE) continue;
 
-				if (is_prop_update(_data)) {
-					let pending_visibility_update = false;
-					let pending_visibility_value = null;
-					for (const [update_key, update_value] of Object.entries(_data)) {
-						if (update_key === "__type__") continue;
-						if (update_key === "visible") {
-							pending_visibility_update = true;
-							pending_visibility_value = update_value;
-							continue;
-						}
-						await this.update_state_cb(
-							outputs[i],
-							{
-								[update_key]: update_value
-							},
-							false
-						);
+			if (is_prop_update(_data)) {
+				let pending_visibility_update = false;
+				let pending_visibility_value = null;
+				for (const [update_key, update_value] of Object.entries(_data)) {
+					if (update_key === "__type__") continue;
+					if (update_key === "visible") {
+						pending_visibility_update = true;
+						pending_visibility_value = update_value;
+						continue;
 					}
-					if (pending_visibility_update) {
-						await this.update_state_cb(
-							outputs[i],
-							{
-								visible: pending_visibility_value
-							},
-							true
-						);
-					}
-				} else {
-					await this.update_state_cb(output_id, { value: _data }, false);
+					await this.update_state_cb(
+						output_id,
+						{
+							[update_key]: update_value
+						},
+						false
+					);
 				}
-			})
-		);
+				if (pending_visibility_update) {
+					await this.update_state_cb(
+						output_id,
+						{
+							visible: pending_visibility_value
+						},
+						true
+					);
+				}
+			} else {
+				await this.update_state_cb(output_id, { value: _data }, false);
+			}
+		}
 	}
 
 	/**
